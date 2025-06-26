@@ -10,7 +10,7 @@ services:
       - "443:443"
     networks:
       - net_1
-      -
+
   jin-db:
     image: mysql
     container_name: jin-db
@@ -25,7 +25,8 @@ services:
       - net_1
 
   my-app:
-    image: my-app
+    image: ghcr.io/silkair/infra_back:latest
+#    image: my-app
     build: .
     container_name: my-app
     ports:
