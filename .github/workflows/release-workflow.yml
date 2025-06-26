@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -58,7 +61,20 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           # ghcr.io/레포지토리 이름
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} #레포지토리 이름
+          tags: |
+            type=sha
+            type=raw,value=${{ needs.tagging.outputs.tag_name }}
+            type=raw,value=latest
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
